@@ -1,0 +1,28 @@
+{
+  "name": "Youtube_thumbnails",
+  "description": "shows youtube thumbnails when hovering over link",
+  "version": "1.0",
+  "manifest_version": 3,
+  "permissions": [
+    "activeTab"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*/*",
+        "http://*/*",
+        "file:///*"
+      ],
+      "exclude_matches": [
+        "https://*.youtube.com/*"
+      ],
+      "runAt": "document_start",
+      "js": [
+        "contentScript.js"
+      ],
+      "css": [
+        "hover.css"
+      ]
+    }
+  ]
+}
