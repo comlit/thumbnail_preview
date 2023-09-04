@@ -1,16 +1,38 @@
 .hoverable {
+    display: inline;
     position: relative;
 }
 
 .hoverable>.hoverable__tooltip {
+    display: inline;
     display: none;
 }
 
 .hoverable:hover>.hoverable__tooltip {
     display: inline;
     position: absolute;
-    top: 1em;
-    left: 1em;
-    background: #888;
-    border: 1px solid black;
+    top: 10px;
+    left: 10px;
+}
+
+.hoverable__tooltip>img {
+    width: 400px;
+    height: auto;
+    border-radius: 15px;
+    border: 5px solid #4f4f4f;
+    max-width: 400px;
+}
+
+.overlay-text {
+    position: absolute;
+    top: 10px; /* Adjust the top position as needed */
+    left: 10px; /* Adjust the left position as needed */
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    max-width: 370px;
+    overflow: hidden;
+    word-wrap: break-word;
 }

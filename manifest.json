@@ -16,7 +16,7 @@
       "exclude_matches": [
         "https://*.youtube.com/*"
       ],
-      "runAt": "document_start",
+      "runAt": "document_idle",
       "js": [
         "contentScript.js"
       ],
