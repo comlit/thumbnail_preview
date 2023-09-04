@@ -8,17 +8,15 @@ const observer = new MutationObserver(function (mutations) {
     mutations.forEach(function (mutation) {
         if (mutation.addedNodes.length > 0) {
             let new_nodes = Array.from(document.querySelectorAll('a[href*="youtube."]:not(:has(.hoverable)), a[href*="youtu.be"]:not(:has(.hoverable))'));
+
+            //filter out the nodes that already have a marker
+            new_nodes = new_nodes.filter(node => node.getAttribute('data-hoverable') !== 'true');
+
             for (let node of new_nodes) {
+                addmarker(node);
                 addOverlay(node);
             }
-
-            let newn = Array.from(document.querySelectorAll('a:not(:has(.hoverable))'));
-            for (let node of newn) {
-                node.innerHTML = `<div class="hoverable"> <span class="hoverable__main">${node.innerHTML}</span><span class="hoverable__tooltip"><img src="https://i.ytimg.com/vi/2QSPk9uIfyI/maxresdefault.jpg" alt="Description of the image"> <div class="overlay-text"> ajaajajajjaj </div> </span> </div>`;
-            }
-
         }
-
     });
 });
 
@@ -34,6 +32,11 @@ function parseLink(link) {
     videoId = videoId.split('&')[0];
     videoId = videoId.split('?')[0];
     return videoId;
+}
+
+function addmarker(node) {
+    //add a marker to the link to prevent it from being processed again
+    node.setAttribute('data-hoverable', 'true');
 }
 
 async function addOverlay(node) {
