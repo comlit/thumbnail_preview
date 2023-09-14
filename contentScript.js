@@ -1,7 +1,10 @@
 let links = Array.from(document.querySelectorAll('a[href*="youtube."]:not(:has(.hoverable)), a[href*="youtu.be"]:not(:has(.hoverable))'));
 
+//links = document.querySelectorAll('a')
+
+
 links.forEach(node => {
-    addOverlay(node);
+    addlister(node)
 });
 
 const observer = new MutationObserver(function (mutations) {
@@ -9,16 +12,74 @@ const observer = new MutationObserver(function (mutations) {
         if (mutation.addedNodes.length > 0) {
             let new_nodes = Array.from(document.querySelectorAll('a[href*="youtube."]:not(:has(.hoverable)), a[href*="youtu.be"]:not(:has(.hoverable))'));
 
+            //new_nodes = Array.from(document.querySelectorAll('a'))
+
             //filter out the nodes that already have a marker
             new_nodes = new_nodes.filter(node => node.getAttribute('data-hoverable') !== 'true');
 
             for (let node of new_nodes) {
                 addmarker(node);
-                addOverlay(node);
+                addlister(node);
             }
         }
     });
 });
+
+// Start observing the document
+observer.observe(document, { childList: true, subtree: true });
+
+
+let div = document.createElement('div');
+div.className = 'move';
+
+document.body.appendChild(div);
+
+let elem = document.querySelector('.mover'),
+    over = false;
+
+
+// element mousemove to stop 
+document.body.addEventListener('mousemove', function (e) {
+    if (over) {
+        let height = div.querySelector('img')?.offsetHeight ?? 235;
+
+        //weird bug fix
+        if(height == 10)
+            height = 235
+
+        let left = e.pageX + 5
+        let top = e.pageY + 15
+
+        //left = Math.max((e.pageX - div.offsetWidth / 1.3), 10)
+        //top = Math.min(e.pageY + 10, window.innerHeight - height - 10)
+
+        if (left > window.innerWidth - div.offsetWidth - 15) {
+            //right
+            left = window.innerWidth - div.offsetWidth - 15
+        }
+
+        if (top > window.innerHeight - height - 15) {
+            //bottom
+            top = e.pageY - height - 15
+        }
+        div.style.left = `${left}px`;
+        div.style.top = `${top}px`;
+    }
+}, true);
+
+//addOverlay()
+
+
+function addlister(test) {
+    test.addEventListener("mouseleave", function (event) {
+        over = false;
+        removeOverlay()
+    }, false);
+    test.addEventListener("mouseover", function (event) {
+        addOverlay(test)
+        over = true;
+    }, false);
+}
 
 function parseLink(link) {
     //extract the video id from the link
@@ -39,14 +100,17 @@ function addmarker(node) {
     node.setAttribute('data-hoverable', 'true');
 }
 
-async function addOverlay(node) {
-    let videoId = parseLink(node.href);
+async function addOverlay(elem) {
+    let href = elem.href;
+    let videoId = parseLink(href);
     if (!videoId)
         return;
-    let data = await fetch(`https://youtube.com/oembed?url=${node.href}&format=json`).then((response) => response.json())
+    let data = await fetch(`https://youtube.com/oembed?url=${href}&format=json`).then((response) => response.json())
 
-    node.innerHTML = `<div class="hoverable"> <span class="hoverable__main">${node.innerHTML}</span><span class="hoverable__tooltip"><img src="https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg" alt="Description of the image"> <div class="overlay-text"> ${data.title} </div> </span> </div>`;
+    if (over)
+        div.innerHTML = `<div> <img src="https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg" alt="Description of the image" class=hoverimage> <div class="overlay-text"> ${data.title} </div> </div>`;
 }
 
-// Start observing the document
-observer.observe(document, { childList: true, subtree: true });
+function removeOverlay() {
+    div.innerHTML = ""
+}
