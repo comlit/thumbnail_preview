@@ -105,9 +105,14 @@ async function addOverlay(elem) {
     let href = elem.href;
     if (href.includes('tiktok.')) {
         tt = true;
-        // issue with cors policy
         let data = await fetch(`https://www.tiktok.com/oembed?url=${href}`).then((response) => response.json())
-        //console.log(data)
+        
+        //check for error code
+        if (data?.code == 400)
+            return;
+        if(!data.thumbnail_url && !data.title)
+            return;
+
         if (over)
             div.innerHTML = `<div> <img src="${data.thumbnail_url}" alt="Youtube Video" class=hoverimage  style="width: 200px;"> <div class="overlay-text" style="width: 170px;"> ${data.title} </div> </div>`;
     }
