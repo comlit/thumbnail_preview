@@ -1,4 +1,4 @@
-let links = Array.from(document.querySelectorAll('a[href*="youtube."]:not(:has(.hoverable)), a[href*="youtu.be"]:not(:has(.hoverable))'));
+let links = Array.from(document.querySelectorAll('a[href*="tiktok."]:not(:has(.hoverable)), a[href*="youtube."]:not(:has(.hoverable)), a[href*="youtu.be"]:not(:has(.hoverable))'));
 
 //links = document.querySelectorAll('a')
 
@@ -10,7 +10,7 @@ links.forEach(node => {
 const observer = new MutationObserver(function (mutations) {
     mutations.forEach(function (mutation) {
         if (mutation.addedNodes.length > 0) {
-            let new_nodes = Array.from(document.querySelectorAll('a[href*="youtube."]:not(:has(.hoverable)), a[href*="youtu.be"]:not(:has(.hoverable))'));
+            let new_nodes = Array.from(document.querySelectorAll('a[href*="tiktok."]:not(:has(.hoverable)), a[href*="youtube."]:not(:has(.hoverable)), a[href*="youtu.be"]:not(:has(.hoverable))'));
 
             //new_nodes = Array.from(document.querySelectorAll('a'))
 
@@ -35,7 +35,8 @@ div.className = 'move';
 document.body.appendChild(div);
 
 let elem = document.querySelector('.mover'),
-    over = false;
+    over = false
+    tt = false;
 
 
 // element mousemove to stop 
@@ -44,7 +45,7 @@ document.body.addEventListener('mousemove', function (e) {
         let height = div.querySelector('img')?.offsetHeight ?? 235;
 
         //weird bug fix
-        if(height == 10)
+        if (height == 10)
             height = 235
 
         let left = e.pageX + 5
@@ -102,13 +103,24 @@ function addmarker(node) {
 
 async function addOverlay(elem) {
     let href = elem.href;
-    let videoId = parseLink(href);
-    if (!videoId)
-        return;
-    let data = await fetch(`https://youtube.com/oembed?url=${href}&format=json`).then((response) => response.json())
+    if (href.includes('tiktok.')) {
+        tt = true;
+        // issue with cors policy
+        let data = await fetch(`https://www.tiktok.com/oembed?url=${href}`).then((response) => response.json())
+        //console.log(data)
+        if (over)
+            div.innerHTML = `<div> <img src="${data.thumbnail_url}" alt="Youtube Video" class=hoverimage  style="width: 200px;"> <div class="overlay-text" style="width: 170px;"> ${data.title} </div> </div>`;
+    }
+    else {
+        tt = false;
+        let videoId = parseLink(href);
+        if (!videoId)
+            return;
+        let data = await fetch(`https://youtube.com/oembed?url=${href}&format=json`).then((response) => response.json())
 
-    if (over)
-        div.innerHTML = `<div> <img src="https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg" alt="Description of the image" class=hoverimage> <div class="overlay-text"> ${data.title} </div> </div>`;
+        if (over)
+            div.innerHTML = `<div> <img src="https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg" alt="Description of the image" class=hoverimage> <div class="overlay-text"> ${data.title} </div> </div>`;
+    }
 }
 
 function removeOverlay() {
