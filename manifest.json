@@ -3,9 +3,6 @@
   "description": "Preview thumbnail and title of Tiktok and Youtube videos by hovering over the link.",
   "version": "0.1",
   "manifest_version": 3,
-  "permissions": [
-    "activeTab"
-  ],
   "content_scripts": [
     {
       "matches": [
