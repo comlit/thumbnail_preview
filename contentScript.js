@@ -124,7 +124,7 @@ async function addOverlay(elem) {
         let data = await fetch(`https://youtube.com/oembed?url=${href}&format=json`).then((response) => response.json())
 
         if (over)
-            div.innerHTML = `<div> <img src="https://i.ytimg.com/vi/${videoId}/maxresdefault.jpg" alt="Description of the image" class=hoverimage> <div class="overlay-text"> ${data.title} </div> </div>`;
+            div.innerHTML = `<div> <img src="https://i.ytimg.com/vi/${videoId}/hqdefault.jpg" alt="Description of the image" class=hoverimage> <div class="overlay-text"> ${data.title} </div> </div>`;
     }
 }
 
