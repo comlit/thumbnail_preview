@@ -110,7 +110,7 @@ async function addOverlay(elem) {
         //check for error code
         if (data?.code == 400)
             return;
-        if(!data.thumbnail_url && !data.title)
+        if(!data.thumbnail_url || !data.title)
             return;
 
         if (over)
