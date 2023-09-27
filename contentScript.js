@@ -87,6 +87,11 @@ function addmarker(node) {
     node.setAttribute('data-hoverable', 'true');
 }
 
+/**
+ * adds an overlay to the link
+ * @param {*} elem
+ * @param {*} pid
+ */
 async function addOverlay(elem, pid) {
     let href = elem.href;
     let parsed = parselinks(href);
@@ -114,10 +119,15 @@ async function addOverlay(elem, pid) {
     }
 }
 
+/**
+ * parses a link and returns the type and the data
+ * @param {*} link
+ * @returns {type: string, data: string}
+ */
 function parselinks(link) {
     let ytregex = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/; //maybe add support for yt profiles later
     let ttregex = /^.*(tiktok\.com\/)([^#\&\?]*).*/; //diferentiate between profile and video
-    let igprofileregex = /instagram\.com\/\w*\/$/;
+    let igprofileregex = /(instagram\.com\/[^/]*)\/?(\?hl=\w{2})?$/;
 
     let ytmatch = link.match(ytregex);
     let ttmatch = link.match(ttregex);
@@ -131,9 +141,14 @@ function parselinks(link) {
     if (ttmatch)
         return { type: "tt", data: link };
     if (igprofilematch)
-        return { type: "ig", data: link + "embed/" };
+        return { type: "ig", data: igprofilematch };
 }
 
+/**	
+ * embeds a youtube video
+ * @param {*} data
+ * @param {*} pid
+ */
 async function showyt(data, pid) {
     let videoId = data.data;
     let ytdata = await fetch(`https://youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`).then((response) => response.json())
@@ -144,6 +159,11 @@ async function showyt(data, pid) {
     changedimensions(pid)
 }
 
+/**
+ * embeds a tiktok video or profile
+ * @param {*} data
+ * @param {*} pid
+ */
 async function showtt(data, pid) {
     let ttdata;
     try {
@@ -154,22 +174,30 @@ async function showtt(data, pid) {
         showerror(pid)
         return;
     }
-    if (data?.code == 400) {
+    if (ttdata?.code == 400) {
         showerror(pid)
         return;
     }
-    //diferentiate between profile and video
-
 
     if (over && id == pid)
-        div.innerHTML = `<div> <img src="${ttdata.thumbnail_url}" alt="Tiktok Video" class=hoverimage  style="width: 200px;"> <div class="overlay-text" style="width: 170px;"> ${ttdata.title} </div> </div>`;
-
+        if (ttdata?.embed_type == "video")
+            div.innerHTML = `<div> <img src="${ttdata.thumbnail_url}" alt="Tiktok Video" class=hoverimage  style="width: 200px;"> <div class="overlay-text" style="width: 170px;"> ${ttdata.title} </div> </div>`;
+        else if (ttdata?.embed_type == "profile") {
+            let name = ttdata.author_url.split("/")[3]
+            div.innerHTML = `<iframe  class="tt" src = "https://www.tiktok.com/embed/${name}" frameborder="0" seamless="seamless" scrolling="no"></iframe >`
+        }
     changedimensions(pid)
 }
 
+/**
+ * embeds an instagram profile
+ * @param {*} data
+ * @param {*} pid
+ */
 function showig(data, pid) {
+    let link = `https://www.${data.data[1]}/embed/`
     if (over && id == pid) {
-        div.innerHTML = `<iframe src="${data.data}" width="100%" height="100%" frameborder="0" scrolling="no" allowtransparency="true"></iframe>`
+        div.innerHTML = `<iframe class="insta" src="${link}" width="100%" height="100%" frameborder="0" scrolling="no" allowtransparency="true"></iframe>`
         dimens.width = div.offsetWidth;
         dimens.height = div.offsetHeight;
         positionOverlay()
@@ -177,6 +205,10 @@ function showig(data, pid) {
 
 }
 
+/**
+ * changes the dimensions of the overlay to the dimensions of the image
+ * @param {*} pid 
+ */
 function changedimensions(pid) {
     let img = document.querySelector('.hoverimage')
     if (!img)
