@@ -161,6 +161,7 @@ async function showyt(data, pid) {
 
 /**
  * embeds a tiktok video or profile
+ * TODO: richtiger video embed und nicht nur thumbnail
  * @param {*} data
  * @param {*} pid
  */
@@ -202,7 +203,13 @@ function showig(data, pid) {
         dimens.height = div.offsetHeight;
         positionOverlay()
     }
-
+}
+/**
+ * embeds an imgur image (TODO)
+ * @param {*} data
+ * @param {*} pid
+ */
+async function showimgur(data, pid) {
 }
 
 /**
